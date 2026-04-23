@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tracker.tracker.dashboard.dao.DashboardDAO">
+
+    <!-- 1) 총 Task 수 -->
+    <select id="countTotalTasks" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*)
+            FROM TASK
+            WHERE STATUS <> 'DELETED'
+              AND USER_ID = #{userId}
+              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+        ]]>
+        <if test="categoryId != null">
+            <![CDATA[
+                AND CATEGORY_ID = #{categoryId}
+            ]]>
+        </if>
+    </select>
+
+    <!-- 2) 완료 Task 수 -->
+    <select id="countDoneTasks" resultType="int">
+        <![CDATA[
+            SELECT COUNT(*)
+            FROM TASK
+            WHERE STATUS <> 'DELETED'
+              AND TASK_STATUS = 'DONE'
+              AND USER_ID = #{userId}
+              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+        ]]>
+        <if test="categoryId != null">
+            <![CDATA[
+                AND CATEGORY_ID = #{categoryId}
+            ]]>
+        </if>
+    </select>
+
+    <!-- 3) 우선순위별 집계 -->
+    <select id="countByPriority"
+            resultType="com.tracker.tracker.dashboard.vo.GroupCountVO">
+        <![CDATA[
+            SELECT
+                PRIORITY AS groupKey,
+                COUNT(*) AS count
+            FROM TASK
+            WHERE STATUS <> 'DELETED'
+              AND USER_ID = #{userId}
+              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+        ]]>
+        <if test="categoryId != null">
+            <![CDATA[
+                AND CATEGORY_ID = #{categoryId}
+            ]]>
+        </if>
+        <![CDATA[
+            GROUP BY PRIORITY
+            ORDER BY COUNT(*) DESC
+        ]]>
+    </select>
+
+    <!-- 4) 카테고리별 집계 (설계1: 전체 분포 유지) -->
+    <select id="countByCategory"
+            resultType="com.tracker.tracker.dashboard.vo.GroupCountVO">
+        <![CDATA[
+            SELECT
+                C.TITLE AS groupKey,
+                COUNT(*) AS count
+            FROM TASK T
+            JOIN TASK_CATEGORY C
+              ON C.CATEGORY_ID = T.CATEGORY_ID
+            WHERE T.STATUS <> 'DELETED'
+              AND T.USER_ID = #{userId}
+              AND T.CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND T.CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+              AND C.STATUS <> 'DELETED'
+            GROUP BY C.TITLE
+            ORDER BY COUNT(*) DESC
+        ]]>
+    </select>
+
+</mapper>

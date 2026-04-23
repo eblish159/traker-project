@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tracker.tracker.task.dao.TaskDAO">
+
+    <resultMap id="TaskResultMap" type="com.tracker.tracker.task.vo.TaskVO">
+        <id property="taskId" column="TASK_ID"/>
+        <result property="taskTitle" column="TASK_TITLE"/>
+        <result property="taskContent" column="TASK_CONTENT"/>
+        <result property="priority" column="PRIORITY"/>
+        <result property="dueDate" column="DUE_DATE"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="categoryId" column="CATEGORY_ID"/>
+        <result property="status" column="STATUS"/>
+        <result property="taskStatus" column="TASK_STATUS"/>
+        <result property="createdDate" column="CREATED_DATE"/>
+        <result property="updatedDate" column="UPDATED_DATE"/>
+    </resultMap>
+
+    <!-- 작업 등록 -->
+    <insert id="insertTask"
+            parameterType="com.tracker.tracker.task.vo.TaskVO"
+            useGeneratedKeys="true"
+            keyProperty="taskId"
+            keyColumn="TASK_ID">
+        <![CDATA[
+        INSERT INTO TASK (
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID
+        ) VALUES (
+            #{taskTitle, jdbcType=VARCHAR},
+            #{taskContent, jdbcType=VARCHAR},
+            #{priority, jdbcType=VARCHAR},
+            #{dueDate, jdbcType=DATE},
+            #{userId, jdbcType=VARCHAR},
+            #{categoryId, jdbcType=NUMERIC}
+        )
+        ]]>
+    </insert>
+
+    <!-- 단건 조회 -->
+    <select id="selectTaskById"
+            parameterType="long"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE TASK_ID = #{taskId}
+          AND STATUS <> 'DELETED'
+        ]]>
+    </select>
+
+    <!-- 삭제되지 않은 전체 작업 조회 -->
+    <select id="selectAllNotDeletedTasks"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE STATUS <> 'DELETED'
+        ORDER BY TASK_ID DESC
+        ]]>
+    </select>
+
+    <!-- 데이터 상태 기준 조회 (ACTIVE / DELETED 용도) -->
+    <select id="selectTasksByStatus"
+            parameterType="string"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE STATUS = #{status, jdbcType=VARCHAR}
+        ORDER BY TASK_ID DESC
+        ]]>
+    </select>
+
+    <!-- 작업 진행 상태 기준 조회 (TODO / DOING / DONE) -->
+    <select id="selectTasksByTaskStatus"
+            parameterType="string"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE STATUS <> 'DELETED'
+          AND TASK_STATUS = #{taskStatus, jdbcType=VARCHAR}
+        ORDER BY TASK_ID DESC
+        ]]>
+    </select>
+
+    <select id="selectTodayTasks"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE STATUS <> 'DELETED'
+          AND USER_ID = #{userId}
+          AND TASK_STATUS <> 'DONE'
+          AND DUE_DATE IS NOT NULL
+          AND TRUNC(DUE_DATE) = TRUNC(SYSDATE)
+        ORDER BY DUE_DATE ASC, TASK_ID DESC
+        ]]>
+    </select>
+
+    <select id="selectOverdueTasks"
+            resultMap="TaskResultMap">
+        <![CDATA[
+        SELECT
+            TASK_ID,
+            TASK_TITLE,
+            TASK_CONTENT,
+            PRIORITY,
+            DUE_DATE,
+            USER_ID,
+            CATEGORY_ID,
+            STATUS,
+            TASK_STATUS,
+            CREATED_DATE,
+            UPDATED_DATE
+        FROM TASK
+        WHERE STATUS <> 'DELETED'
+          AND USER_ID = #{userId}
+          AND TASK_STATUS <> 'DONE'
+          AND DUE_DATE IS NOT NULL
+          AND TRUNC(DUE_DATE) < TRUNC(SYSDATE)
+        ORDER BY DUE_DATE ASC, TASK_ID DESC
+        ]]>
+    </select>
+
+
+
+
+    <!-- 작업 내용 수정 -->
+    <update id="updateTask"
+            parameterType="com.tracker.tracker.task.vo.TaskVO">
+        <![CDATA[
+        UPDATE TASK
+        SET
+            TASK_TITLE = #{taskTitle, jdbcType=VARCHAR},
+            TASK_CONTENT = #{taskContent, jdbcType=VARCHAR},
+            PRIORITY = #{priority, jdbcType=VARCHAR},
+            DUE_DATE = #{dueDate, jdbcType=DATE},
+            USER_ID = #{userId, jdbcType=VARCHAR},
+            CATEGORY_ID = #{categoryId, jdbcType=NUMERIC},
+            TASK_STATUS = #{taskStatus, jdbcType=VARCHAR},
+            UPDATED_DATE = SYSDATE
+        WHERE TASK_ID = #{taskId}
+          AND STATUS <> 'DELETED'
+        ]]>
+    </update>
+
+    <!-- 작업 진행 상태만 변경 -->
+    <update id="updateTaskStatus">
+        <![CDATA[
+        UPDATE TASK
+        SET
+            TASK_STATUS = #{taskStatus, jdbcType=VARCHAR},
+            UPDATED_DATE = SYSDATE
+        WHERE TASK_ID = #{taskId}
+          AND STATUS <> 'DELETED'
+        ]]>
+    </update>
+
+    <!-- 논리 삭제 -->
+    <update id="deleteTask"
+            parameterType="long">
+        <![CDATA[
+        UPDATE TASK
+        SET
+            STATUS = 'DELETED',
+            UPDATED_DATE = SYSDATE
+        WHERE TASK_ID = #{taskId}
+          AND STATUS <> 'DELETED'
+        ]]>
+    </update>
+
+    <!-- 페이지네이션 -->
+    <select id="selectTaskPage" resultType="com.tracker.tracker.task.vo.TaskVO">
+        <![CDATA[
+    SELECT
+        TASK_ID,
+        TASK_TITLE,
+        TASK_CONTENT,
+        PRIORITY,
+        DUE_DATE,
+        USER_ID,
+        CATEGORY_ID,
+        STATUS,
+        TASK_STATUS,
+        CREATED_DATE,
+        UPDATED_DATE
+    FROM TASK
+    WHERE USER_ID = #{userId}
+      AND STATUS <> 'DELETED'
+    ]]>
+
+        <if test="categoryId != null">
+            <![CDATA[
+        AND CATEGORY_ID = #{categoryId}
+        ]]>
+        </if>
+        <if test="taskStatus != null and taskStatus != ''">
+            AND TASK_STATUS = #{taskStatus}
+        </if>
+
+        <![CDATA[
+    ORDER BY TASK_ID DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+    ]]>
+    </select>
+
+    <select id="countTasks" resultType="int">
+        <![CDATA[
+        SELECT COUNT(*)
+        FROM TASK
+        WHERE USER_ID = #{userId}
+          AND STATUS <> 'DELETED'
+    ]]>
+        <if test="categoryId != null">
+            <![CDATA[
+          AND CATEGORY_ID = #{categoryId}
+        ]]>
+        </if>
+        <if test="taskStatus != null and taskStatus != ''">
+            AND TASK_STATUS = #{taskStatus}
+        </if>
+    </select>
+
+</mapper>

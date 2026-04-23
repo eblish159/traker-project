@@ -1,0 +1,17 @@
+server:
+  port: 18080
+
+spring:
+  application:
+    name: tracker
+
+  datasource:
+    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521/XE
+    username: C##TRACKER
+    password: 1234
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  type-aliases-package: com.tracker.tracker
+  configuration:
+    map-underscore-to-camel-case: true

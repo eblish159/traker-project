@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tracker.tracker.user.dao.UserDAO">
+
+    <!-- userId로 사용자 조회 -->
+    <select id="findByUserId" parameterType="string" resultType="com.tracker.tracker.user.vo.UserVO">
+        <![CDATA[
+            SELECT
+                USER_ID,
+                USER_PASSWORD,
+                NAME,
+                EMAIL,
+                ROLE,
+                STATUS,
+                CREATED_DATE,
+                UPDATED_DATE
+            FROM USERS
+            WHERE USER_ID = #{userId}
+        ]]>
+    </select>
+
+</mapper>
