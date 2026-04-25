@@ -6,9 +6,12 @@ public class DashboardResponseVO {
     private int totalCount;
     private int doneCount;
     private  double doneRate;
+    private int todayCount;
+    private int overdueCount;
 
     private List<GroupCountVO> byPriority;
     private List<GroupCountVO> byCategory;
+
 
     public int getTotalCount() {
         return totalCount;
@@ -49,4 +52,12 @@ public class DashboardResponseVO {
     public void setByCategory(List<GroupCountVO> byCategory) {
         this.byCategory = byCategory;
     }
+
+    public int getTodayCount() {return todayCount;}
+
+    public void setTodayCount(int todayCount) {this.todayCount = todayCount;}
+
+    public int getOverdueCount() {return overdueCount;}
+
+    public void setOverdueCount(int overdueCount) {this.overdueCount = overdueCount;}
 }

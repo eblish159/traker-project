@@ -1,16 +1,124 @@
-# React + Vite
+# Task Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 프로젝트 소개
+작업(Task)을 관리하면서 진행 상태를 한눈에 파악할 수 있도록 만든 트래커 프로젝트입니다.
 
-Currently, two official plugins are available:
+단순히 할 일을 저장하는 기능을 넘어서,  
+마감일 기준으로 작업 현황을 분석할 수 있는 대시보드를 함께 구성했습니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+작업을 “관리하는 것”과 “분석하는 것”을 분리해서  
+보다 명확한 구조로 설계한 것이 핵심입니다.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 사용 기술
 
-## Expanding the ESLint configuration
+### Backend
+- Java 17
+- Spring Boot
+- MyBatis
+- Oracle DB
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Frontend
+- React
+- Vite
+
+---
+
+## 실행 방법
+
+### Backend 실행
+```bash
+./gradlew bootRun
+```
+
+### Frontend 실행
+```bash
+cd frontend
+npm install
+npm run dev
+```
+### 접속
+- http://localhost:5173 에서 확인 가능
+
+
+## 현재 구현된 기능
+
+### 작업 관리
+- 작업 생성 / 수정 / 삭제
+- 상태 관리 (TODO / DOING / DONE)
+- 우선순위 설정
+- 카테고리 분류
+
+### 사용자
+- 세션 기반 로그인 처리
+- 사용자별 작업 데이터 분리
+
+### 대시보드
+- 전체 작업 수 / 완료 작업 수 / 완료율
+- 우선순위별 분포
+- 카테고리별 분포
+- 오늘 마감 작업 조회
+- 지연 작업 조회
+
+
+## 설계 방향
+
+### 1. 관리와 통계 영역 분리
+- 대시보드 → 작업 현황을 숫자로 확인
+- 작업 목록 → 실제 작업 관리
+
+두 영역을 분리해서  
+데이터 확인과 작업 수행이 섞이지 않도록 설계했습니다.
+
+---
+
+### 2. 마감일(DUE_DATE) 기준 통계
+생성일이 아닌 마감일 기준으로 통계를 구성하여  
+실제 작업 흐름에 맞는 분석이 가능하도록 설계했습니다.
+
+---
+
+### 3. today / overdue 기능 분리
+오늘 마감 작업과 지연 작업은 단순 필터가 아니라  
+사용자가 즉시 확인해야 하는 정보라고 판단하여  
+별도의 기능으로 분리했습니다.
+
+---
+
+### 4. 대시보드 → 작업목록 연결 구조
+대시보드에서는 상세 데이터를 직접 보여주기보다  
+건수 중심으로 요약하고, 클릭 시 해당 작업 목록으로 이동하도록 설계했습니다.
+
+## 프로젝트 구조
+```
+backend
+├─ controller
+├─ service
+├─ dao
+├─ mapper (MyBatis XML)
+└─ vo / dto
+
+frontend
+├─ pages
+├─ api
+└─ components
+```
+
+- Controller는 요청과 응답 처리에만 집중하고,
+- Service에서는 실제 비즈니스 로직을 담당하도록 분리했습니다.
+- DAO는 데이터베이스 접근만 담당하게 해서 책임을 명확하게 나눴습니다.
+- 이와 같이 계층을 분리하여 역할을 명확히 하고,
+  유지보수와 확장성을 고려한 구조로 설계했습니다.
+
+
+## 개선 예정
+- 대시보드 통계 기준을 DUE_DATE로 완전 통일
+- 대시보드 지표 클릭 시 작업 목록 자동 이동
+- 작업 분석 코멘트 기능 추가  
+  (예: 지연 작업 비율 안내)
+- 필터 기능 확장 및 UI 개선
+
+## 프로젝트 목표
+- 단순 CRUD 기능을 넘어서  
+  작업 데이터를 기반으로 상태를 분석하고 관리할 수 있는 구조를 구현하는 것을 목표로 했습니다.

@@ -12,8 +12,8 @@
             FROM TASK
             WHERE STATUS <> 'DELETED'
               AND USER_ID = #{userId}
-              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+              AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
         ]]>
         <if test="categoryId != null">
             <![CDATA[
@@ -30,8 +30,8 @@
             WHERE STATUS <> 'DELETED'
               AND TASK_STATUS = 'DONE'
               AND USER_ID = #{userId}
-              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+              AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
         ]]>
         <if test="categoryId != null">
             <![CDATA[
@@ -50,8 +50,8 @@
             FROM TASK
             WHERE STATUS <> 'DELETED'
               AND USER_ID = #{userId}
-              AND CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-              AND CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+              AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
         ]]>
         <if test="categoryId != null">
             <![CDATA[
@@ -76,8 +76,8 @@
               ON C.CATEGORY_ID = T.CATEGORY_ID
             WHERE T.STATUS <> 'DELETED'
               AND T.USER_ID = #{userId}
-              AND T.CREATED_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
-              AND T.CREATED_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+              AND T.DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+              AND T.DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
               AND C.STATUS <> 'DELETED'
             GROUP BY C.TITLE
             ORDER BY COUNT(*) DESC
