@@ -34,10 +34,12 @@ public interface TaskDAO {
                                 @Param("offset") int offset,
                                 @Param("size") int size,
                                 @Param("categoryId") Long categoryId,
-                                @Param("taskStatus") String taskStatus);
+                                @Param("taskStatus") String taskStatus,
+                                @Param("due") String due);
 
     int countTasks(@Param("userId") String userId,
                    @Param("categoryId") Long getCategoryId,
-                    @Param("taskStatus") String taskStatus);
+                    @Param("taskStatus") String taskStatus,
+                    @Param("due") String due);
 
 }
