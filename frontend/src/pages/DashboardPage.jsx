@@ -1,6 +1,8 @@
 // frontend/src/pages/DashboardPage.jsx
 
 import React, { useEffect, useState } from "react";
+import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
+import { useNavigate } from "react-router-dom";
 import {
   fetchDashboard,
   fetchTodayTasks,
@@ -28,6 +30,7 @@ export default function DashboardPage() {
 
   const [todayTasks, setTodayTasks] = useState([]);
   const [overdueTasks, setOverdueTasks] = useState([]);
+  const navigate = useNavigate();
 
   async function load() {
     setError("");
@@ -136,21 +139,21 @@ export default function DashboardPage() {
             <Card title="총 작업" value={data.totalCount} />
             <Card title="완료" value={data.doneCount} />
             <Card title="완료율" value={`${data.doneRate}%`} />
-            <Card title="오늘 마감" value={todayTasks.length} />
-            <Card title="지연 작업" value={overdueTasks.length} />
+            <Card title="오늘 마감" value={todayTasks.length} onValueClick={() => navigate("/tasks?due=today")} />
+            <Card title="지연 작업" value={overdueTasks.length} onValueClick={() => navigate("/tasks?due=overdue")} />
           </div>
 
           {/* 기존 집계 */}
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <ListBox title="우선순위별" items={data.byPriority} />
-            <ListBox title="카테고리별(전체 카테고리)" items={data.byCategory} />
+            <DonutChartBox title="우선순위별" items={data.byPriority} />
+            <DonutChartBox title="카테고리별(전체 카테고리)" items={data.byCategory} />
           </div>
 
-          {/* 마감 추적 리스트 */}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <TaskDeadlineBox title="오늘 마감 작업" items={todayTasks} />
-            <TaskDeadlineBox title="지연 작업" items={overdueTasks} isOverdue />
-          </div>
+{/*            */}{/* 마감 추적 리스트 */}
+{/*           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}> */}
+{/*             <TaskDeadlineBox title="오늘 마감 작업" items={todayTasks} /> */}
+{/*             <TaskDeadlineBox title="지연 작업" items={overdueTasks} isOverdue /> */}
+{/*           </div> */}
 
           <div style={{ opacity: 0.7 }}>
             기간: {startDate} ~ {endDate} / 선택 카테고리: {categoryId || "전체"}
@@ -161,16 +164,36 @@ export default function DashboardPage() {
   );
 }
 
-function Card({ title, value }) {
+function Card({ title, value, onValueClick }) {
   return (
     <div style={{ border: "1px solid #ddd", borderRadius: 8, padding: 12, minWidth: 180 }}>
       <div style={{ opacity: 0.7, fontSize: 13 }}>{title}</div>
-      <div style={{ fontSize: 26, fontWeight: 700, marginTop: 6 }}>{value}</div>
+      <div
+        onClick={onValueClick}
+        style={{
+            fontSize: 26,
+            fontWeight: 700,
+            marginTop: 6,
+            cursor: onValueClick ? "pointer" : "default",
+            textDecoration: onValueClick ? "underline" : "none",
+           }}
+       >
+       {value}
+       </div>
     </div>
   );
 }
 
-function ListBox({ title, items }) {
+function DonutChartBox({ title, items }) {
+  const COLORS = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6"];
+
+  const data = Array.isArray(items)
+    ? items.map((it) => ({
+        name: it.groupKey,
+        value: it.count,
+      }))
+    : [];
+
   return (
     <div
       style={{
@@ -183,73 +206,31 @@ function ListBox({ title, items }) {
     >
       <h3 style={{ margin: "0 0 10px 0" }}>{title}</h3>
 
-      {!items || items.length === 0 ? (
+      {data.length === 0 ? (
         <div style={{ opacity: 0.7 }}>데이터 없음</div>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-          {items.map((it, idx) => (
-            <li
-              key={`${it.groupKey}-${idx}`}
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                border: "1px solid #eee",
-                borderRadius: 6,
-                padding: "8px 10px",
-              }}
-            >
-              <span style={{ fontWeight: 600 }}>{it.groupKey}</span>
-              <span>{it.count}</span>
-            </li>
-          ))}
-        </ul>
+        <PieChart width={300} height={250}>
+          <Pie
+            data={data}
+            dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={90}
+            paddingAngle={3}
+          >
+            {data.map((entry, index) => (
+              <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+
+          <Tooltip />
+          <Legend />
+        </PieChart>
       )}
     </div>
   );
 }
 
-function TaskDeadlineBox({ title, items, isOverdue = false }) {
-  return (
-    <div
-      style={{
-        border: `1px solid ${isOverdue ? "#fecaca" : "#ddd"}`,
-        borderRadius: 8,
-        padding: 12,
-        minWidth: 320,
-        flex: "1 1 320px",
-        background: isOverdue ? "#fff7f7" : "#fff",
-      }}
-    >
-      <h3 style={{ margin: "0 0 10px 0", color: isOverdue ? "#b91c1c" : "#111827" }}>
-        {title}
-      </h3>
 
-      {!items || items.length === 0 ? (
-        <div style={{ opacity: 0.7 }}>해당 작업 없음</div>
-      ) : (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 8 }}>
-          {items.map((task) => (
-            <li
-              key={task.taskId}
-              style={{
-                border: "1px solid #eee",
-                borderRadius: 6,
-                padding: "8px 10px",
-                display: "grid",
-                gap: 4,
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>{task.taskTitle}</div>
-              {task.taskContent && (
-                <div style={{ fontSize: 13, color: "#666" }}>{task.taskContent}</div>
-              )}
-              <div style={{ fontSize: 13, opacity: 0.8 }}>
-                마감일: {formatDate(task.dueDate)} / 상태: {task.taskStatus}
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}

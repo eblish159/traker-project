@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   deleteTask,
   fetchTasks,
@@ -79,6 +80,8 @@ export default function TaskListPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [categoryId, setCategoryId] = useState("");
+  const [searchParams] = useSearchParams();
+  const due = searchParams.get("due");
 
   async function load(page = currentPage) {
     setError("");
@@ -99,6 +102,10 @@ export default function TaskListPage() {
           params.categoryId = categoryId;
       }
 
+      if (due) {
+        params.due = due;
+      }
+
       const data = await fetchTasks(params);
 
       setTasks(Array.isArray(data.content) ? data.content : []);
@@ -117,7 +124,7 @@ export default function TaskListPage() {
 
   useEffect(() => {
     load(1);
-  }, [taskStatusFilter, categoryId]);
+  }, [taskStatusFilter, categoryId, due]);
 
   useEffect(() => {
     load(currentPage);

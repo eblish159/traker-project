@@ -95,13 +95,14 @@ public class TaskController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String taskStatus
+            @RequestParam(required = false) String taskStatus,
+            @RequestParam(required = false) String due
     ) {
 
         // =========================
         // 개발용 코드 (활성화)
         // =========================
-        TaskListResponseVO response = taskService.getTaskPage(DEV_USER_ID, page, size, categoryId, taskStatus);
+        TaskListResponseVO response = taskService.getTaskPage(DEV_USER_ID, page, size, categoryId, taskStatus, due);
         return ResponseEntity.ok(response);
 
         // =========================

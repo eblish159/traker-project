@@ -36,5 +36,5 @@ public interface TaskService {
     List<TaskVO> getOverdueTasks(String userId);
 
     //페이지
-    TaskListResponseVO getTaskPage(String userId, int page, int size, Long categoryId, String taskStatus);
+    TaskListResponseVO getTaskPage(String userId, int page, int size, Long categoryId, String taskStatus, String due);
 }
