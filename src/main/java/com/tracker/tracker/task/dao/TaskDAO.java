@@ -40,6 +40,6 @@ public interface TaskDAO {
     int countTasks(@Param("userId") String userId,
                    @Param("categoryId") Long getCategoryId,
                     @Param("taskStatus") String taskStatus,
-                   @Param("due") String due);
+                    @Param("due") String due);
 
 }

@@ -166,7 +166,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskListResponseVO getTaskPage(String userId, int page, int size, Long categoryId, String taskStaus, String due) {
+    public TaskListResponseVO getTaskPage(String userId, int page, int size, Long categoryId, String taskStatus, String due) {
 
         //page 랑 size가 이상한값으로 들어오는것 방지
         if(page < 1) {
@@ -181,10 +181,10 @@ public class TaskServiceImpl implements TaskService {
         int offset = (page - 1) * size;
 
         // 현재 페이지 목록 조회
-        List<TaskVO> taskList = taskDAO.selectTaskPage(userId, offset, size, categoryId, taskStaus, due);
+        List<TaskVO> taskList = taskDAO.selectTaskPage(userId, offset, size, categoryId, taskStatus, due);
 
         // 전체 개수 조회
-        int totalCount = taskDAO.countTasks(userId, categoryId, taskStaus, due);
+        int totalCount = taskDAO.countTasks(userId, categoryId,taskStatus, due);
 
         // 전체 페이지 수 계산
         int totalPages = (int) Math.ceil((double) totalCount / size);
