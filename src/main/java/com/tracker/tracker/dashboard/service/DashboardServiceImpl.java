@@ -1,6 +1,7 @@
 package com.tracker.tracker.dashboard.service;
 
 import com.tracker.tracker.dashboard.dao.DashboardDAO;
+import com.tracker.tracker.dashboard.vo.CompletionTrendVO;
 import com.tracker.tracker.dashboard.vo.DashboardResponseVO;
 import com.tracker.tracker.dashboard.vo.GroupCountVO;
 import org.springframework.stereotype.Service;
@@ -75,4 +76,11 @@ public class DashboardServiceImpl implements DashboardService {
         double rate = ((double) done / (double) total) * 100.0;
         return Math.round(rate * 10.0) / 10.0;
     }
-}
+
+    @Override
+    public List<CompletionTrendVO> getCompletionTrend(String userId, String startDate, String endDate, Long categoryId, String groupBy) {
+        validateDates(startDate, endDate);
+
+        return  dashboardDAO.countCompletionTrend(userId, startDate, endDate, categoryId, groupBy);
+        }
+    }

@@ -41,3 +41,21 @@ export async function fetchOverdueTasks() {
 
   return res.json();
 }
+
+
+export async function fetchDailyTrend(startDate, endDate, categoryId, groupBy) {
+    const qs = new URLSearchParams({ startDate, endDate, groupBy });
+
+    if (categoryId) qs.append("categoryId", categoryId);
+
+    const res = await fetch(`/api/dashboard/trend?${qs.toString()}`, {
+                               credentials: "include",
+                             });
+
+    if(!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || "기간별 추이 데이터 조회 실패");
+    }
+
+    return res.json();
+    }

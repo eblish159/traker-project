@@ -84,4 +84,87 @@
         ]]>
     </select>
 
+    <!-- 5) 기간별 작업 추이 집계 -->
+    <!-- 5) 기간별 완료 추이 집계 -->
+    <select id="countCompletionTrend"
+            resultType="com.tracker.tracker.dashboard.vo.CompletionTrendVO">
+
+        <choose>
+            <!-- 일별 -->
+            <when test="groupBy == 'daily'">
+                <![CDATA[
+                SELECT
+                    TO_CHAR(DUE_DATE, 'YYYY-MM-DD') AS "date",
+                    COUNT(*) AS "count"
+                FROM TASK
+                WHERE STATUS <> 'DELETED'
+                  AND TASK_STATUS = 'DONE'
+                  AND USER_ID = #{userId}
+                  AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                  AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+            ]]>
+            </when>
+
+            <!-- 주별: 해당 주 월요일 기준 -->
+            <when test="groupBy == 'weekly'">
+                <![CDATA[
+                SELECT
+                    TO_CHAR(TRUNC(DUE_DATE, 'IW'), 'YYYY-MM-DD') AS "date",
+                    COUNT(*) AS "count"
+                FROM TASK
+                WHERE STATUS <> 'DELETED'
+                  AND TASK_STATUS = 'DONE'
+                  AND USER_ID = #{userId}
+                  AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                  AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+            ]]>
+            </when>
+
+            <!-- 월별 -->
+            <otherwise>
+                <![CDATA[
+                SELECT
+                    TO_CHAR(TRUNC(DUE_DATE, 'MM'), 'YYYY-MM') AS "date",
+                    COUNT(*) AS "count"
+                FROM TASK
+                WHERE STATUS <> 'DELETED'
+                  AND TASK_STATUS = 'DONE'
+                  AND USER_ID = #{userId}
+                  AND DUE_DATE >= TO_DATE(#{startDate}, 'YYYY-MM-DD')
+                  AND DUE_DATE < TO_DATE(#{endDate}, 'YYYY-MM-DD') + 1
+            ]]>
+            </otherwise>
+        </choose>
+
+        <if test="categoryId != null">
+            <![CDATA[
+            AND CATEGORY_ID = #{categoryId}
+        ]]>
+        </if>
+
+        <choose>
+            <when test="groupBy == 'daily'">
+                <![CDATA[
+                GROUP BY TO_CHAR(DUE_DATE, 'YYYY-MM-DD')
+                ORDER BY "date"
+            ]]>
+            </when>
+
+            <when test="groupBy == 'weekly'">
+                <![CDATA[
+                GROUP BY TO_CHAR(TRUNC(DUE_DATE, 'IW'), 'YYYY-MM-DD')
+                ORDER BY "date"
+            ]]>
+            </when>
+
+            <otherwise>
+                <![CDATA[
+                GROUP BY TO_CHAR(TRUNC(DUE_DATE, 'MM'), 'YYYY-MM')
+                ORDER BY "date"
+            ]]>
+            </otherwise>
+        </choose>
+    </select>
+
+
 </mapper>

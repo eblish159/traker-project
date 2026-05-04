@@ -1,6 +1,6 @@
 package com.tracker.tracker.dashboard.dao;
+import com.tracker.tracker.dashboard.vo.CompletionTrendVO;
 
-import com.tracker.tracker.dashboard.vo.DashboardResponseVO;
 import com.tracker.tracker.dashboard.vo.GroupCountVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -36,4 +36,11 @@ public interface DashboardDAO {
 
     int countOverdueTasks(@Param("userId") String userId,
                           @Param("categoryId") Long categoryId);
+
+    List<CompletionTrendVO> countCompletionTrend(@Param("userId") String userId,
+                                                 @Param("startDate") String startDate,
+                                                 @Param("endDate") String endDate,
+                                                 @Param("categoryId") Long categoryId,
+                                                 @Param("groupBy") String groupBy);
+
 }

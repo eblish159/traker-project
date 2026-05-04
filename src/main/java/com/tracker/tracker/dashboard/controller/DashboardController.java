@@ -1,12 +1,15 @@
 package com.tracker.tracker.dashboard.controller;
 
 import com.tracker.tracker.dashboard.service.DashboardService;
+import com.tracker.tracker.dashboard.vo.CompletionTrendVO;
 import com.tracker.tracker.dashboard.vo.DashboardResponseVO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
@@ -44,4 +47,19 @@ public class DashboardController {
         return ResponseEntity.ok(response);
     }
 
-}
+
+    @GetMapping("/trend")
+    public ResponseEntity<List<CompletionTrendVO>> getCompletionTrend(
+        @RequestParam String startDate,
+        @RequestParam String endDate,
+        @RequestParam(required = false) Long categoryId,
+        @RequestParam(defaultValue = "daily") String groupBy
+    ) {
+        List<CompletionTrendVO> response =
+                dashboardService.getCompletionTrend(DEV_USER_ID, startDate, endDate, categoryId, groupBy);
+
+        return ResponseEntity.ok(response);
+    }
+
+    }
+
