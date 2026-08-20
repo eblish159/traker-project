@@ -107,7 +107,7 @@ export default function DashboardPage() {
               icon="📊"
             />
             <SummaryCard
-              title="지연 작업 수(전체 기간)"
+              title="총 지연 작업 수(전체 기간)"
               value={`${overdueTasks.length}건`}
               subtitle="작업 목록에서 확인 →"
               icon="⚠️"
