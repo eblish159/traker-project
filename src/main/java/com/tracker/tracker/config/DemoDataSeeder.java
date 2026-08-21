@@ -29,6 +29,7 @@ public class DemoDataSeeder implements CommandLineRunner {
         CATEGORY_NAMES.put(1L, "개발");
         CATEGORY_NAMES.put(2L, "운동");
         CATEGORY_NAMES.put(3L, "회의");
+
         CATEGORY_NAMES.put(4L, "문서");
         CATEGORY_NAMES.put(5L, "테스트");
         CATEGORY_NAMES.put(6L, "버그");

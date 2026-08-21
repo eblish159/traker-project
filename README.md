@@ -93,7 +93,8 @@
 ### Task API
 | Method | URL | 설명 |
 |---|---|---|
-|GET|`/api/tasks`|작업 목록 조회|
+|GET|`/api/tasks`|작업 목록 조회 (페이지네이션, 카테고리/상태/마감 필터)|
+|GET|`/api/tasks/{taskId}`|작업 단건 조회|
 |POST|`/api/tasks`|작업 등록|
 |PUT|`/api/tasks/{taskId}`|작업 수정|
 |DELETE|`/api/tasks/{taskId}`|작업 삭제|
@@ -118,12 +119,12 @@
 |GET|`/api/dashboard/trend`|기간별 완료 추이 조회|
 
 ### Dashboard Parameter
-|Parameter|설명|
-|-|-|
-|startDate|조회 시작일|
-|endDate|조회 종료일|
-|categoryId|카테고리 필터|
-|groupBy|일/주/월 그룹 기준|
+|Parameter|설명|적용 API|
+|-|-|-|
+|startDate|조회 시작일|공통|
+|endDate|조회 종료일|공통|
+|categoryId|카테고리 필터|공통|
+|groupBy|일/주/월 그룹 기준|`/api/dashboard/trend`에만 적용|
 
 ---
 
@@ -138,11 +139,12 @@
 |GET|`/api/reports/time-analysis`|완료 시간 및 마감 준수 현황 분석|
 
 ### Report Parameter
-|Parameter|설명|
-|-|-|
-|startDate|조회 시작일|
-|endDate|조회 종료일|
-|categoryId|카테고리 필터|
+|Parameter|설명|적용 API|
+|-|-|-|
+|startDate|조회 시작일|공통|
+|endDate|조회 종료일|공통|
+|categoryId|카테고리 필터|공통|
+|groupBy|일/주/월 그룹 기준|`/api/reports/completion-trend`에만 적용|
 
 ---
 
@@ -348,7 +350,7 @@ frontend
 
 ### 분리 내용
 
-- SummaryCard / DonutChartBox / AnalysisBox 컴포넌트 분리
+- SummaryCard / DonutChartBox / DailyTrendChart / AnalysisBox 컴포넌트 분리
 - TodayTaskListCard / OverdueTopThreeCard / RecentActivityCard / ReportBannerCard 컴포넌트 분리
 - DashboardFilter 컴포넌트 분리
 - useDashboardData 커스텀 Hook 분리
